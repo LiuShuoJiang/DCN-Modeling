@@ -2,32 +2,27 @@
 
 ## Introduction
 
-This project aims to explore, simulate, and analyze various data center network (DCN) topologies using the Fast Network Simulation Setup (FNSS) and Mininet. Our goal is to understand the performance implications of different network structures and contribute to the design of more efficient, scalable, and robust data center architectures.
+This project aims to explore, simulate, and analyze various data center network (DCN) topologies using NetworkX. Our goal is to understand the performance implications of different user-defined network configurations and identify optimal routing that meet the demands of modern data centers. We will leverage Python to simulate these topologies and evaluate their performance metrics such as bandwidth and cost. By analyzing the results, we aim to provide insights into the design and optimization of DCNs for large-scale internet services.
 
 ## Project Overview
 
-In the realm of cloud computing and large-scale internet services, the efficiency and scalability of data center networks play a pivotal role. This project focuses on modeling basic to advanced DCN topologies, simulating their behavior under different conditions, and analyzing their performance metrics such as throughput, bandwidth, and latency. Through our work, we aim to identify optimal network configurations that meet the ever-growing demands of modern data centers.
-
-## Current Progress
-
-- **Network Modeling and Simulation**: We have successfully modeled and simulated basic network structures like fat-tree architectures using FNSS and visualized these topologies with Mininet.
-- **Visualization**: Leveraging NetworkX, we've achieved an intuitive understanding of network dynamics, enabling us to identify potential bottlenecks and inefficiencies within the simulated environments.
-
-## Future Work
-
-- **Custom Controller**: Implementing a custom controller for multi-path routing and load balancing to optimize network performance.
-- **Advanced Structure Modeling**: Expanding our scope to include more sophisticated network topologies, aiming to compare their performance against basic models.
-- **Custom Topology Development**: We plan to design and evaluate our own network topology, focusing on overcoming the limitations identified in traditional designs.
+In the realm of cloud computing and large-scale internet services, the efficiency and scalability of data center networks play a pivotal role. This project focuses on modeling DCN topologies, simulating their behavior under different conditions.
 
 ## Setup Instructions
 
-- Set up a Ubuntu 20.04 Virtual Machine on your local machine or use a cloud-based service like Google Cloud Platform or Amazon Web Services. 
-- Install Mininet following the instructions at [Mininet's official website](http://mininet.org/download/). 
-  - Note: the installation of Mininet requires sudo privileges, and it is recommended to install it on a virtual machine to avoid crushing your local machine's network settings. 
-- Install [FNSS](https://github.com/fnss/fnss):
+I use an Anaconda Python 3.11 virtual environment on a Windows 11 laptop to run this project. You may use other Python environments like `venv` or `pipenv` to run the project, but I recommend using Anaconda to avoid any dependency issues.
 
-```bash
-pip install networkx
-pip install scipy
-pip install fnss
-```
+To run the project, you will need to install the following dependencies:
+
+1. `NetworkX`
+2. `Matplotlib`
+3. `NumPy`
+4. `SciPy`
+5. `FFmpeg` (for animations)
+6. `Graphviz` (for visualizing the network topology)
+7. `PyGraphviz`
+8. `GurobiPy` (for optimization)
+
+Or you may directly create the environment using the `environment.yml` file provided.
+
+Please run `Simulation.py` to start the simulation!
