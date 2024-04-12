@@ -4,6 +4,8 @@ Brief: This file contains the main optimization logic for the data center networ
 """
 
 import random
+import gurobipy as gp
+from gurobipy import *
 
 
 def generate_mock_routing_info(network, active_user_indices):
@@ -23,5 +25,37 @@ def generate_mock_routing_info(network, active_user_indices):
                 if (hub.name, user_name) in network.graph.edges:
                     routing_info[(hub.name, user_name)] = random.randint(0, 3)
     return routing_info
+
+def optimize_routing(network, active_user_indices):
+    ld = len(network.data_centers)
+    lh = len(network.hubs)
+    lu = len(active_user_indices)
+
+    optimization = gp.Model("Data Routing Optimization")
+
+    # variable x_du is a binary variable that determines whether we pick datacenter d for user u
+    x = {d: {u: optimization.addVar(vtype=GRB.BINARY) for u in range(lu)} for d in range(ld)}
+
+    # variable y_hu is a binary variable that determines whether we pick hub h for user u
+    y = {h: {u: optimization.addVar(vtype=GRB.BINARY) for u in range(lu)} for h in range(lh)}
+
+    # must have 1 and only 1 datacenter and hub for each user
+    for u in range(lu):
+        optimization.addLConstr(gp.quicksum(x[d][u] for d in range(ld)), GRB.EQUAL, 1)
+        optimization.addLConstr(gp.quicksum(y[h][u] for h in range(lh)), GRB.EQUAL, 1)
+
+    # must not exceed each datacenter's pool size
+    for d in range(ld):
+        optimization.addLConstr(gp.quicksum(x[d][u] * network.users[network.active_user_indices[u]].need for u in range(lu)), GRB.Less_EQUAL, network.data_centers[d].pool_size)
+
+    # must not exceed each hub's bandwidth
+    for h in range(lh):
+        optimization.addLConstr(gp.quicksum(y[h][u] * network.users[network.active_user_indices[u]].need for u in range(lu)), GRB.Less_EQUAL, network.hubs[h].bandwidth)
+
+    # minimize the total cost
+    optimization.setObjective(gp.quicksum(y[h][u] * network.hubs[h].cost for h in range(lh) for u in range(lu)), GRB.MINIMIZE)
+    optimization.optimize()
+
+    routing_info = {}
 
 # TODO: Optimization logic
