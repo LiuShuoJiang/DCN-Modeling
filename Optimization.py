@@ -57,5 +57,26 @@ def optimize_routing(network, active_user_indices):
     optimization.optimize()
 
     routing_info = {}
+    choice = {}
+    for u in range(lu):
+        for h in range(lh):
+            if y[h][u].x == 1:
+                user_name = f"User_{network.active_user_indices[u] + 1}"
+                hub_name = network.hubs[h].name
+                routing_info[(hub_name, user_name)] = network.users[network.active_user_indices[u]].need
+                choice[user_name] = hub_name
+
+    for u in range(lu):
+        for d in range(ld):
+            if x[d][u].x == 1:
+                user_name = f"User_{network.active_user_indices[u] + 1}"
+                hub_name = choice[user_name]
+                dc_name = network.data_centers[d].name
+                if (dc_name, hub_name) not in routing_info:
+                    routing_info[(dc_name, hub_name)] = network.users[network.active_user_indices[u]].need
+                else:
+                    routing_info[(dc_name, hub_name)] += network.users[network.active_user_indices[u]].need
+
+    return routing_info
 
 # TODO: Optimization logic
