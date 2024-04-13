@@ -90,5 +90,3 @@ def optimize_routing(network, active_user_indices):
                     routing_info[(dc_name, hub_name)] += network.users[u].need
 
     return routing_info
-
-# TODO: Optimization logic
