@@ -9,7 +9,7 @@ import matplotlib.animation as animation
 from matplotlib.animation import FFMpegWriter
 import random
 import json
-from Optimization import generate_mock_routing_info
+from Optimization import generate_mock_routing_info, optimize_routing
 from DCNetwork import DataCenterNetwork
 
 
@@ -22,7 +22,7 @@ def update_network(frame, network, max_users, ani_fig, max_seconds):
     network.update_users(active_user_indices)
 
     # Generate and apply mock routing info (TODO: should be change into an optimization function later!)
-    routing_info = generate_mock_routing_info(network, active_user_indices)
+    routing_info = optimize_routing(network, active_user_indices)
     network.simulate_backend_communication(routing_info)
 
     # Visualize the network with the current routing

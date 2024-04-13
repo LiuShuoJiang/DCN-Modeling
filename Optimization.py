@@ -27,9 +27,15 @@ def generate_mock_routing_info(network, active_user_indices):
     return routing_info
 
 def optimize_routing(network, active_user_indices):
+    # print(active_user_indices)
+    # print(network.users)
     ld = len(network.data_centers)
     lh = len(network.hubs)
     lu = len(active_user_indices)
+
+    # in cases of zero dcs, hubs, or users, return empty dictionary
+    if ld == 0 or lh == 0 or lu == 0:
+        return {}
 
     optimization = gp.Model("Data Routing Optimization")
 
@@ -46,36 +52,42 @@ def optimize_routing(network, active_user_indices):
 
     # must not exceed each datacenter's pool size
     for d in range(ld):
-        optimization.addLConstr(gp.quicksum(x[d][u] * network.users[network.active_user_indices[u]].need for u in range(lu)), GRB.Less_EQUAL, network.data_centers[d].pool_size)
+        optimization.addLConstr(gp.quicksum(x[d][u] * network.users[u].need for u in range(lu)), GRB.LESS_EQUAL, network.data_centers[d].pool_size)
 
     # must not exceed each hub's bandwidth
     for h in range(lh):
-        optimization.addLConstr(gp.quicksum(y[h][u] * network.users[network.active_user_indices[u]].need for u in range(lu)), GRB.Less_EQUAL, network.hubs[h].bandwidth)
+        optimization.addLConstr(gp.quicksum(y[h][u] * network.users[u].need for u in range(lu)), GRB.LESS_EQUAL, network.hubs[h].bandwidth)
 
     # minimize the total cost
     optimization.setObjective(gp.quicksum(y[h][u] * network.hubs[h].cost for h in range(lh) for u in range(lu)), GRB.MINIMIZE)
     optimization.optimize()
+
+    # print(GRB.OPTIMAL)
+
+    # if model is infeasible return an empty dictionary
+    if GRB.OPTIMAL == 3:
+        return {}
 
     routing_info = {}
     choice = {}
     for u in range(lu):
         for h in range(lh):
             if y[h][u].x == 1:
-                user_name = f"User_{network.active_user_indices[u] + 1}"
+                user_name = f"User_{active_user_indices[u] + 1}"
                 hub_name = network.hubs[h].name
-                routing_info[(hub_name, user_name)] = network.users[network.active_user_indices[u]].need
+                routing_info[(hub_name, user_name)] = network.users[u].need
                 choice[user_name] = hub_name
 
     for u in range(lu):
         for d in range(ld):
             if x[d][u].x == 1:
-                user_name = f"User_{network.active_user_indices[u] + 1}"
+                user_name = f"User_{active_user_indices[u] + 1}"
                 hub_name = choice[user_name]
                 dc_name = network.data_centers[d].name
                 if (dc_name, hub_name) not in routing_info:
-                    routing_info[(dc_name, hub_name)] = network.users[network.active_user_indices[u]].need
+                    routing_info[(dc_name, hub_name)] = network.users[u].need
                 else:
-                    routing_info[(dc_name, hub_name)] += network.users[network.active_user_indices[u]].need
+                    routing_info[(dc_name, hub_name)] += network.users[u].need
 
     return routing_info
 
