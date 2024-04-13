@@ -9,7 +9,7 @@ import matplotlib.animation as animation
 from matplotlib.animation import FFMpegWriter
 import random
 import json
-from Optimization import generate_mock_routing_info, optimize_routing
+from Optimization import *
 from DCNetwork import DataCenterNetwork
 
 
@@ -21,8 +21,9 @@ def update_network(frame, network, max_users, ani_fig, max_seconds):
     active_user_indices = sorted(random.sample(range(max_users), k=random.randint(1, max_users)))
     network.update_users(active_user_indices)
 
-    # Generate and apply mock routing info (TODO: should be change into an optimization function later!)
+    # Generate and apply mock routing info
     routing_info = optimize_routing(network, active_user_indices)
+    # routing_info = generate_mock_routing_info(network, active_user_indices)
     network.simulate_backend_communication(routing_info)
 
     # Visualize the network with the current routing
@@ -30,7 +31,7 @@ def update_network(frame, network, max_users, ani_fig, max_seconds):
 
     # Update the title to reflect the current simulation time correctly
     time_passed = frame if frame < max_seconds else max_seconds
-    plt.title(f"Time: {time_passed}s", fontsize=16)
+    plt.title(f"Time: {time_passed + 1}s", fontsize=16)
 
 
 with open("./Config.json", "r") as json_file:
@@ -45,7 +46,7 @@ network = DataCenterNetwork(dc_attrs, hub_attrs, max_users_attrs)
 network.build_network()
 
 fig = plt.figure(figsize=(12, 9))
-ani = animation.FuncAnimation(fig, update_network, frames=range(max_seconds + 1),
+ani = animation.FuncAnimation(fig, update_network, frames=range(max_seconds),
                               fargs=(network, len(max_users_attrs), fig, max_seconds),
                               interval=1000, repeat=False)
 
