@@ -110,6 +110,16 @@ class DataCenterNetwork:
         non_zero_edges = [(u, v) for u, v, d in edges if d['traffic_intensity'] > 0]
         edge_colors = [self.graph[u][v]['traffic_intensity'] for u, v in non_zero_edges]
 
+        min_width = 1
+        max_width = 10
+        max_weight = max(edge_colors)
+        min_weight = min(edge_colors)
+
+        scaled_weights = [
+            min_width + (max_width - min_width) * (weight - min_weight) / (max_weight - min_weight + 1e-9)
+            for weight in edge_colors
+        ]
+
         # Separate nodes by type
         data_center_nodes = [node for node, attr in self.graph.nodes(data=True) if attr['type'] == 'Data Center']
         hub_nodes = [node for node, attr in self.graph.nodes(data=True) if attr['type'] == 'Hub']
@@ -117,15 +127,15 @@ class DataCenterNetwork:
 
         # Draw nodes with different colors for each type
         nx.draw_networkx_nodes(self.graph, pos, nodelist=data_center_nodes,
-                               node_color='skyblue', node_size=800, label='Data Centers')
+                               node_color='skyblue', node_size=1000, label='Data Centers')
         nx.draw_networkx_nodes(self.graph, pos, nodelist=hub_nodes,
-                               node_color='lightgreen', node_size=800, label='Hubs')
+                               node_color='lightgreen', node_size=1000, label='Hubs')
         nx.draw_networkx_nodes(self.graph, pos, nodelist=user_nodes,
-                               node_color='salmon', node_size=800, label='Users')
+                               node_color='salmon', node_size=1000, label='Users')
 
         nx.draw_networkx_labels(self.graph, pos=pos, font_family='Georgia', verticalalignment='baseline')
         nx.draw_networkx_edges(self.graph, pos, edgelist=non_zero_edges,
-                               width=edge_colors, edge_color='m', alpha=0.6)
+                               width=scaled_weights, edge_color='m', alpha=0.6)
         plt.axis('off')
         # plt.show()
 
