@@ -19,9 +19,9 @@ To run the project, you will need to install the following dependencies:
 3. `NumPy`
 4. `SciPy`
 5. `FFmpeg` (for animations)
-6. `Graphviz` (for visualizing the network topology)
-7. `PyGraphviz`
-8. `GurobiPy` (for optimization)
+6. `Graphviz` (for visualizing the network topology): Install with command `conda install -c conda-forge graphviz`
+7. `PyGraphviz`: Install with command `conda install -c conda-forge pygraphviz`
+8. `GurobiPy` (for optimization; license needed): Refer to [Gurobi official documentation](https://support.gurobi.com/hc/en-us/articles/14799677517585-Getting-Started-with-Gurobi-Optimizer) page for installation instructions
 
 Or you may directly create the environment using the `environment.yml` file provided.
 
