@@ -1,4 +1,4 @@
-# CSE 6730 Data Center Network Modeling Project
+# Data Center Network Modeling
 
 ## Introduction
 
